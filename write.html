@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dyslexia-Friendly Handwriting Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- OpenDyslexic Font -->
+<link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+
+<!-- Tesseract.js for OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.3/dist/tesseract.min.js"></script>
+
+<style>
+:root {
+  --bg: #f7faff;
+  --card: #ffffff;
+  --text: #333;
+  --btn-bg: #d0f0ff;
+  --btn-hover: #a0e0ff;
+}
+body {
+  margin:0;
+  font-family:'OpenDyslexic',Arial,sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  text-align:center;
+}
+header{padding:20px;}
+header h1{font-size:2rem; margin:0;}
+header p{font-size:1.1rem; margin-top:6px;}
+.card{
+  background: var(--card);
+  margin:20px auto;
+  padding:25px;
+  border-radius:20px;
+  max-width:900px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+#prompt{font-size:1.4rem; font-weight:600; margin-bottom:15px;}
+canvas{
+  background:#fafafa;
+  border:2px solid #ccc;
+  border-radius:12px;
+  width:100%;
+  height:280px;
+  touch-action:none;
+  margin-bottom:12px;
+}
+button{
+  background: var(--btn-bg);
+  border:none;
+  border-radius:20px;
+  padding:10px 18px;
+  font-size:1rem;
+  margin:6px;
+  cursor:pointer;
+  transition:0.2s;
+  font-family:'OpenDyslexic',Arial,sans-serif;
+}
+button:hover{background: var(--btn-hover);}
+textarea{
+  width:100%;
+  height:70px;
+  font-family:'OpenDyslexic',Arial,sans-serif;
+  font-size:1.2rem;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #bbb;
+  margin-top:10px;
+}
+.status{margin-top:12px; font-size:1.1rem;}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>Smart Handwriting Practice ✍️</h1>
+  <p>Write with finger, stylus, mouse, or type below. Gentle encouragement only!</p>
+</header>
+
+<div class="card">
+  <div id="prompt">Loading...</div>
+  <canvas id="canvas"></canvas>
+
+  <div>
+    <button onclick="clearCanvas()">🗑️ Clear</button>
+    <button onclick="undoStroke()">↩️ Undo</button>
+    <button onclick="saveCanvas()">💾 Save</button>
+    <button onclick="nextPrompt()">➡️ Next</button>
+    <button onclick="readPrompt()">🔊 Read Prompt</button>
+    <button onclick="checkHandwriting()">🔍 Check Handwriting</button>
+  </div>
+
+  <textarea id="typedInput" placeholder="Optional: type your answer here..."></textarea>
+  <div>
+    <button onclick="checkTyped()">✔️ Check Typed Answer</button>
+  </div>
+
+  <div class="status" id="status">Take your time. You are doing great!</div>
+</div>
+
+<script>
+// ===== PROMPTS =====
+const prompts = [
+  "apple","book","sun","tree","water",
+  "I like to read books.",
+  "The sun is shining bright.",
+  "My cat is very playful.",
+  "I enjoy learning new things.",
+  "The flowers are blooming in spring.",
+  "Reading helps us learn new words and ideas."
+];
+let currentIndex = 0;
+const promptEl = document.getElementById('prompt');
+const statusEl = document.getElementById('status');
+
+// ===== TTS =====
+function readPrompt(){
+  const text = prompts[currentIndex];
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 0.9;
+    utter.lang = 'en-US';
+    window.speechSynthesis.speak(utter);
+  } else {
+    alert("TTS not supported on this device");
+  }
+}
+
+// ===== CANVAS =====
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let drawing=false, strokes=[], currentStroke=[];
+
+function resizeCanvas(){
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  ctx.scale(ratio, ratio);
+  ctx.lineCap='round';
+  ctx.lineWidth=4;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function startDraw(x,y){drawing=true; currentStroke=[[x,y]]; ctx.beginPath(); ctx.moveTo(x,y);}
+function draw(x,y){if(!drawing) return; ctx.lineTo(x,y); ctx.stroke(); currentStroke.push([x,y]);}
+function endDraw(){if(drawing){drawing=false; strokes.push(currentStroke); currentStroke=[];}}
+
+canvas.addEventListener('mousedown', e=>startDraw(e.offsetX,e.offsetY));
+canvas.addEventListener('mousemove', e=>draw(e.offsetX,e.offsetY));
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('mouseleave', endDraw);
+canvas.addEventListener('touchstart', e=>{e.preventDefault(); const r=canvas.getBoundingClientRect(); const t=e.touches[0]; startDraw(t.clientX-r.left,t.clientY-r.top);});
+canvas.addEventListener('touchmove', e=>{e.preventDefault(); const r=canvas.getBoundingClientRect(); const t=e.touches[0]; draw(t.clientX-r.left,t.clientY-r.top);});
+canvas.addEventListener('touchend', endDraw);
+
+function clearCanvas(){strokes=[]; ctx.clearRect(0,0,canvas.width,canvas.height); statusEl.innerText="Canvas cleared. Take your time!";}
+function undoStroke(){strokes.pop(); redraw();}
+function redraw(){ctx.clearRect(0,0,canvas.width,canvas.height); ctx.lineWidth=4; strokes.forEach(s=>{ctx.beginPath(); ctx.moveTo(s[0][0],s[0][1]); for(let i=1;i<s.length;i++) ctx.lineTo(s[i][0],s[i][1]); ctx.stroke();});}
+function saveCanvas(){const l=document.createElement('a'); l.download='handwriting.png'; l.href=canvas.toDataURL(); l.click();}
+
+// ===== PROMPT MANAGEMENT =====
+function loadPrompt(){promptEl.innerText=prompts[currentIndex]; statusEl.innerText="Write gently or type below."; clearCanvas(); document.getElementById('typedInput').value='';}
+function nextPrompt(){currentIndex=(currentIndex+1)%prompts.length; loadPrompt();}
+loadPrompt();
+
+// ===== CHECK TYPED ANSWER =====
+function checkTyped(){
+  const typed = document.getElementById('typedInput').value.trim().toLowerCase();
+  const target = prompts[currentIndex].trim().toLowerCase();
+  if(!typed){statusEl.innerText="Please write or type your answer.";}
+  else if(typed===target){statusEl.innerText="Excellent! Your typed answer matches the prompt!";}
+  else{statusEl.innerText="Almost there! Try again gently.";}
+}
+
+// ===== OCR CHECK - FOCUS ON SPELLING ONLY =====
+function extractLetters(str){
+  return str.toLowerCase().replace(/[^a-z0-9]+/g,'');
+}
+
+function checkHandwriting(){
+  statusEl.innerText="Analyzing handwriting…";
+  canvas.toBlob(blob=>{
+    Tesseract.recognize(blob,'eng',{logger:m=>console.log(m)}).then(({data:{text}})=>{
+      const recognized = extractLetters(text);
+      const target = extractLetters(prompts[currentIndex]);
+      if(!recognized){statusEl.innerText="Write more clearly and try again gently!";}
+      else {
+        // Count matching letters in order
+        let matchCount=0, i=0, j=0;
+        while(i<recognized.length && j<target.length){
+          if(recognized[i]===target[j]){matchCount++; j++;}
+          i++;
+        }
+        let similarity = matchCount/target.length;
+        if(similarity>=0.6){ // threshold for positive feedback
+          statusEl.innerText="Great! Spelling looks correct!";
+        } else {
+          statusEl.innerText="Almost! Keep trying gently.";
+        }
+      }
+    }).catch(err=>{console.error(err); statusEl.innerText="Could not read handwriting — try clearer strokes.";});
+  });
+}
+</script>
+</body>
+</html>

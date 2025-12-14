@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dyslexia Learning Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+<style>
+:root {
+  --bg: #fff8e7;
+  --accent1: #ffb347;
+  --accent2: #ffd8a8;
+  --shadow: rgba(0,0,0,0.15);
+  --text: #222;
+}
+
+body {
+  margin:0;
+  font-family:'OpenDyslexic', Arial, sans-serif;
+  background: linear-gradient(135deg,#fff8e7,#ffe6d1);
+  overflow-x:hidden;
+}
+
+/* Header */
+header{
+  text-align:center;
+  padding:40px 20px;
+  background: linear-gradient(120deg,#ffcc99,#ffb347);
+  color:#fff;
+  border-bottom-left-radius:40px;
+  border-bottom-right-radius:40px;
+  box-shadow:0 5px 20px var(--shadow);
+}
+header h1{
+  font-size:3rem;
+  margin:0;
+  text-shadow: 1px 1px 2px #333;
+}
+header p{
+  font-size:1.3rem;
+  margin-top:10px;
+  text-shadow: 0 0 2px #333;
+}
+
+/* Container */
+.container{
+  max-width:1100px;
+  margin:20px auto;
+  padding:20px;
+}
+
+/* Controls */
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  justify-content:center;
+  margin-bottom:30px;
+}
+.controls label{font-size:1rem;}
+input[type=range]{width:140px;}
+
+/* Navigation Cards */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+  margin-top:20px;
+}
+
+.card{
+  background: var(--accent2);
+  padding:25px;
+  border-radius:25px;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 10px 25px var(--shadow);
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.card:hover{
+  transform: translateY(-7px);
+  box-shadow:0 15px 35px var(--shadow);
+  background: var(--accent1);
+}
+.card::before{
+  content:"📚";
+  position:absolute;
+  top:-15px;
+  left:-15px;
+  font-size:2.5rem;
+}
+.card h3{
+  margin-top:25px;
+  font-size:1.6rem;
+}
+.card p{
+  font-size:1rem;
+  margin-top:12px;
+}
+
+/* Footer */
+footer{
+  text-align:center;
+  padding:25px;
+  margin-top:40px;
+  background: var(--accent1);
+  color:#fff;
+  border-radius:20px 20px 0 0;
+  box-shadow:0 -5px 20px var(--shadow);
+}
+
+/* Floating Elements */
+.floating{
+  position:absolute;
+  width:40px;
+  height:40px;
+  font-size:2rem;
+  animation: float 10s infinite linear;
+  opacity:0.7;
+}
+@keyframes float{
+  0%{transform:translateY(0px) translateX(0px);}
+  50%{transform:translateY(-50px) translateX(30px);}
+  100%{transform:translateY(0px) translateX(0px);}
+}
+
+/* Responsive */
+@media(max-width:600px){
+  .cards{grid-template-columns:1fr;}
+  header h1{font-size:2rem;}
+  header p{font-size:1rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Welcome to Dyslexia Learning 🌟</h1>
+  <p>Read, write, and explore with joy and ease!</p>
+</header>
+
+
+  <div class="cards">
+    <div class="card" onclick="navigate('read.html')">
+      <h3>Reading</h3>
+      <p>Comfortable reading tools with dyslexia-friendly spacing.</p>
+    </div>
+    <div class="card" onclick="navigate('library.html')">
+      <h3>Library</h3>
+      <p>Explore poems and stories written with care.</p>
+    </div>
+    <div class="card" onclick="navigate('writing.html')">
+      <h3>Writing</h3>
+      <p>Practice words, sentences, and paragraphs with interactive tools.</p>
+    </div>
+    <div class="card" onclick="navigate('about.html')">
+      <h3>About & Credits</h3>
+      <p>Learn about dyslexia and our mission to help children.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Elements -->
+<div class="floating" style="top:50px; left:20px;">✨</div>
+<div class="floating" style="top:120px; left:300px;">📖</div>
+<div class="floating" style="top:200px; left:150px;">🖌️</div>
+<div class="floating" style="top:300px; left:400px;">🌟</div>
+<div class="floating" style="top:400px; left:50px;">📚</div>
+
+<footer>
+  <p>Made with ❤️ for children with dyslexia 🌈</p>
+</footer>
+
+<script>
+function navigate(page){
+  window.location.href = page;
+}
+
+// Controls for dyslexia-friendly adjustments
+const container = document.body;
+const fontsizeSlider = document.getElementById('fontsizeSlider');
+const lineheightSlider = document.getElementById('lineheightSlider');
+const wordspacingSlider = document.getElementById('wordspacingSlider');
+
+fontsizeSlider.addEventListener('input', e=>{
+  container.style.fontSize=e.target.value+'px';
+  document.getElementById('fontsizeLabel').innerText=e.target.value;
+});
+lineheightSlider.addEventListener('input', e=>{
+  container.style.lineHeight=e.target.value;
+  document.getElementById('lineheightLabel').innerText=e.target.value;
+});
+wordspacingSlider.addEventListener('input', e=>{
+  container.style.wordSpacing=e.target.value+'em';
+  document.getElementById('wordspacingLabel').innerText=e.target.value;
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dyslexia-Friendly Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+<style>
+:root {
+  --bg: #fdf6e3;
+  --card-bg: #fff;
+  --text: #222;
+  --btn-bg: #ffdab9;
+  --btn-hover: #ffc080;
+  --accent: #ffb347;
+  --shadow: rgba(0,0,0,0.15);
+}
+body {
+  margin:0;
+  font-family:'OpenDyslexic', Arial, sans-serif;
+  background: linear-gradient(135deg,#fdf6e3,#ffe6d1);
+  color: var(--text);
+}
+header{
+  padding:30px;
+  text-align:center;
+  background: linear-gradient(120deg,#ffcc99,#ffb347);
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  box-shadow: 0 5px 20px var(--shadow);
+}
+header h1{font-size:2.2rem;margin:0;color:#fff;text-shadow: 1px 1px 2px #333;}
+header p{font-size:1.2rem;margin-top:8px;color:#fff;}
+
+.container{
+  max-width:1000px;
+  margin:20px auto;
+  padding:20px;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  margin-bottom:25px;
+  align-items:center;
+  justify-content:center;
+}
+.controls label{font-size:1rem;}
+input[type=range]{width:140px;}
+
+.list-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  margin-bottom:25px;
+}
+
+.list-buttons button{
+  background: var(--btn-bg);
+  border:none;
+  border-radius:25px;
+  padding:12px 22px;
+  font-size:1rem;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 5px 15px var(--shadow);
+}
+.list-buttons button:hover{
+  background: var(--btn-hover);
+  transform: scale(1.05);
+}
+
+.card{
+  background: var(--card-bg);
+  padding:25px;
+  border-radius:25px;
+  box-shadow:0 12px 30px var(--shadow);
+  margin-bottom:25px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  border: 3px solid #ffd8a8;
+}
+.card:hover{
+  transform: translateY(-5px);
+  box-shadow:0 15px 35px var(--shadow);
+}
+
+.card::before{
+  content:"📖";
+  position:absolute;
+  top:-15px;
+  left:-15px;
+  font-size:2rem;
+}
+.card::after{
+  content:"✨";
+  position:absolute;
+  bottom:-15px;
+  right:-15px;
+  font-size:2rem;
+}
+
+.content{
+  font-size:18px;
+  line-height:1.6;
+  word-spacing:0.3em;
+  color: var(--text);
+  white-space: pre-wrap;
+  max-height:700px;
+  overflow-y:auto;
+  padding-right:10px;
+}
+
+/* Responsive */
+@media (max-width:600px){
+  .controls{flex-direction:column;align-items:flex-start;}
+  .list-buttons{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dyslexia-Friendly Library 📚</h1>
+  <p>Adjust spacing and font size for comfortable reading!</p>
+</header>
+
+<div class="container">
+  <div class="controls">
+    <label>Font Size: <span id="fontsizeLabel">18</span>px</label>
+    <input type="range" id="fontsizeSlider" min="14" max="30" value="18">
+    
+    <label>Line Spacing: <span id="lineheightLabel">1.6</span></label>
+    <input type="range" id="lineheightSlider" min="1" max="2" step="0.1" value="1.6">
+
+    <label>Word Spacing: <span id="wordspacingLabel">0.3</span>em</label>
+    <input type="range" id="wordspacingSlider" min="0.1" max="1" step="0.05" value="0.3">
+  </div>
+
+  <div class="list-buttons">
+    <button onclick="showContent('poem1')">Nature – Lalit</button>
+    <button onclick="showContent('poem2')">The Unseen – Lalit</button>
+    <button onclick="showContent('poem3')">Artists – Lalit</button>
+    <button onclick="showContent('poem4')">Countable's – Lalit</button>
+    <button onclick="showContent('poem5')">The Words – Lalit</button>
+    <button onclick="showContent('story1')">The Nightingale and the Rose</button>
+    <button onclick="showContent('story2')">The Selfish Giant</button>
+  </div>
+
+  <div class="card content" id="content">Select a poem or story to read.</div>
+</div>
+
+<script>
+const libraryContent = {
+  "poem1": `Rain is falling on leaves and trees,
+Making sounds with every breeze.
+Bushes shake with each drop's fall,
+The forest listens, quiet and small.
+Squirrels and ants have gone to rest,
+Hiding safe in homes they know best.
+
+A sharp call breaks the quiet air,
+The peacock dances, proud and fair.
+All the animals stop to see,
+Watching still, like a silent tree.
+Then lightning cracks across the sky—
+They run and hide as sparks fly by.
+
+The rain grows soft, then fades away,
+And life returns to greet the day.
+The animals step out once more,
+Back to the tasks they had before.
+But in the calm, so soft and true,
+Lies a beauty only few can view.
+
+– Lalit`,
+  "poem2": `In a sea of faces where few are seen,
+We chase lost chances and half-built dreams.
+The noise is endless, the race unfair,
+And no one asks what burden we bear.
+We wear our smiles like stitched-up skin,
+While storms keep raging quiet within.
+
+We trip on choices we never controlled,
+Blamed for stories we didn’t unfold.
+The world rewards with tilted scales,
+Where some are born with wind in their sails.
+We carry names we didn’t choose,
+And dreams we’re scared we might just lose.
+Their hopes weigh heavy on our chest,
+So we lay our own ones down to rest.
+Each breath a trade, each step a debt,
+Chasing peace we haven't met.
+
+Still, we move not chasing gold,
+But just to stand where dreams unfold.
+The world won’t clap for silent pain,
+Or count the tears that fall like rain.
+But somewhere deep, beneath the weight,
+A voice survives the twist of fate.
+Not every soul that breaks will fall,
+Some rise, unheard, and still stand tall.
+
+– Lalit`,
+  "poem3": `Applause rains down like a summer storm,
+Their name in lights, now loud and warm.
+From whispered dreams to crowded halls,
+The world now answers every call.
+Whether brush, or beat, or scripted scene,
+They stand adorned, once kept unseen.
+
+They started small, in silence deep,
+Their own thoughts robbed them of their sleep.
+Each word within, a cruel remark,
+“Not good enough,” it echoed dark.
+They watched the greats with heavy sighs,
+And shrank beneath their dreaming skies.
+
+Each night they sat with tired heads,
+While dreams and worries softly spread.
+A brush, a pen, their only friend,
+No sleep, no start, and no clear end.
+They made a world where they could hide,
+And left the real one far outside.
+
+They see the storm before it shows,
+And feel the highs before it grows.
+Their mind, a spark the world can’t frame,
+A silent gift, a sacred flame.
+To dream, to shape what others miss —
+Is both their burden and their bliss.
+
+– Lalit`,
+  "poem4": `They walked us in with trembling feet,
+Big hands above, the world beneath.
+We cried at first, then learned to stay,
+In halls that stole the fear away.
+We fought, we laughed in tangled sound—
+Unclear in words, but clearly bound.
+
+They showed us stars for doing well,
+Each mark a story we would tell.
+But soon the stars began to fall,
+And numbers rose to build a wall.
+What once was joy began to bite,
+As every wrong outshone the right.
+
+They asked for marks, not if we slept.
+They judged the chart, not what we kept.
+No one heard the silent war,
+They just compared who scored more.
+A rank was all they saw in name.
+The rest of us just wore the shame.
+
+We played their game, we knew the rules,
+And let them shape us into tools.
+Now dreams lie quiet, out of reach,
+Too far for us to even teach.
+No rage remains, just silent sighs
+And hearts that learned to lower their eyes.
+
+– Lalit`,
+  "poem5": `They stood in the center, voices raised and rough,
+Words like edges, quiet but enough.
+A crowd around, yet no one spoke,
+As tension hung like rising smoke.
+Two hearts revealing each other, thread by thread,
+While others watched and turned their heads.
+
+They whispered tales with careful grace,
+Then stepped away to save their face.
+Some smiled behind a lowered gaze,
+While choosing sides in quiet ways.
+The fire they sparked, they left to burn,
+And walked away with no concern.
+
+They shouted things they couldn’t take,
+Each word was a wound they couldn’t fake.
+The people watched, but said no word,
+Some even smiled at what they heard.
+The ones who fought were torn apart,
+While others left with pure hearts.
+
+And when it ended, nothing stayed,
+Just silence where the anger played.
+The crowd moved on like passing rain,
+Unmarked by hurt, untouched by pain.
+Still walk with wounds the world won’t know.
+
+– Lalit`,
+  "story1": `The Nightingale and the Rose
+
+It is often said that love can be found where least expected, and so begins the tale of a young student who longs for the love of a professor's daughter. In a garden, he observes the nightingale, a tiny bird, sing with great passion beneath a red rose tree. Desperate to help the student win her love, the nightingale offers her heart, singing through the night to imbue the rose with the color and magic of true love. The nightingale sacrifices her life, pressing herself against the thorn to dye the rose red. The next morning, the student presents the rose to the girl, yet she rejects him, claiming another gift is more fitting. The tale concludes with the nightingale's ultimate sacrifice being unrecognized, illustrating themes of selfless love and the sometimes unappreciated nature of true devotion.
+
+The story continues through multiple events in the garden, highlighting the student's hope, the trials of patience, and the nightingale’s unwavering dedication. Through the narrative, Oscar Wilde explores the bittersweet nature of love, sacrifice, and the dissonance between idealism and reality. The story spans several paragraphs, showing the emotional depth of both human and natural characters.
+
+– Oscar Wilde`,
+  "story2": `The Selfish Giant
+
+Once there was a giant who owned a beautiful garden. He loved it dearly but was selfish and would not let children play there. He built a high wall around it, and the garden became quiet and lonely. One day, children found a way into the garden, and the giant saw them playing joyfully. The winter seemed to vanish, flowers bloomed again, and the giant felt happiness he had never known. Realizing his selfishness, he knocked down the wall and allowed the children to play freely. The garden thrived, and the giant experienced the joy of giving and sharing. He learned that kindness brings more reward than selfishness, and the story ends with the garden always welcoming children, a place of warmth and happiness.
+
+The story continues with small events of children playing and the giant observing, gradually understanding the value of generosity. It shows the transformation of a character who begins with greed but ends with a heart open to love and community, emphasizing moral lessons on empathy, sharing, and happiness.
+
+– Oscar Wilde`
+};
+
+const contentDiv = document.getElementById('content');
+
+function showContent(key){
+  contentDiv.textContent = libraryContent[key];
+}
+
+// ===== Controls =====
+document.getElementById('fontsizeSlider').addEventListener('input', e=>{
+  contentDiv.style.fontSize = e.target.value+'px';
+  document.getElementById('fontsizeLabel').innerText=e.target.value;
+});
+document.getElementById('lineheightSlider').addEventListener('input', e=>{
+  contentDiv.style.lineHeight=e.target.value;
+  document.getElementById('lineheightLabel').innerText=e.target.value;
+});
+document.getElementById('wordspacingSlider').addEventListener('input', e=>{
+  contentDiv.style.wordSpacing=e.target.value+'em';
+  document.getElementById('wordspacingLabel').innerText=e.target.value;
+});
+</script>
+</body>
+</html>

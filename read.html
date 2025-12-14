@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Friendly Reading Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- OpenDyslexic Font -->
+<link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+
+<style>
+/* ================= GLOBAL ================= */
+:root {
+  --bg-main: #dff4ff;
+  --bg-card: #ffffff;
+  --accent: #ffe066;
+  --accent-soft: #fff4b8;
+  --text-main: #2b2b2b;
+}
+
+body {
+  margin: 0;
+  font-family: 'Open-Dyslexic', Arial, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: background 0.4s;
+}
+
+/* ================= HEADER ================= */
+header {
+  text-align: center;
+  padding: 25px 15px 10px;
+}
+
+header h1 {
+  font-size: 2.3rem;
+  margin-bottom: 6px;
+}
+
+header p {
+  font-size: 1.1rem;
+  color: #444;
+}
+
+/* ================= CONTROLS ================= */
+.controls,
+.library {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px;
+}
+
+button {
+  background: var(--accent-soft);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+}
+
+button:hover {
+  background: var(--accent);
+  transform: scale(1.05);
+}
+
+/* ================= READING CARD ================= */
+.reading-card {
+  background: var(--bg-card);
+  max-width: 800px;
+  margin: 25px auto 50px;
+  padding: 40px 35px;
+  border-radius: 35px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  font-size: 1.45rem;
+  line-height: 1.9;
+  transition: opacity 0.4s;
+}
+
+.title {
+  font-size: 1.7rem;
+  margin-bottom: 8px;
+}
+
+.credit {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 28px;
+}
+
+.text {
+  white-space: pre-line;
+}
+
+/* ================= THEMES ================= */
+.theme-blue { --bg-main: #dff4ff; }
+.theme-green { --bg-main: #e8fff1; }
+.theme-yellow { --bg-main: #fff7d6; }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 600px) {
+  .reading-card {
+    margin: 15px;
+    padding: 28px 22px;
+    font-size: 1.3rem;
+  }
+}
+</style>
+</head>
+
+<body class="theme-blue">
+
+<header>
+  <h1>Kind Reading 🌈</h1>
+  <p>Choose something gentle to read.</p>
+</header>
+
+<!-- Accessibility Controls -->
+<section class="controls">
+  <button onclick="changeFont(1)">A +</button>
+  <button onclick="changeFont(-1)">A −</button>
+  <button onclick="toggleSpacing()">More Space</button>
+  <button onclick="speak()">🔊 Read</button>
+</section>
+
+<!-- Theme Controls -->
+<section class="controls">
+  <button onclick="setTheme('blue')">Blue</button>
+  <button onclick="setTheme('green')">Green</button>
+  <button onclick="setTheme('yellow')">Yellow</button>
+</section>
+
+<!-- Library -->
+<section class="library" id="libraryButtons"></section>
+
+<!-- Reading Area -->
+<section class="reading-card" id="card">
+  <div class="title" id="title">Welcome</div>
+  <div class="credit" id="credit">Take your time</div>
+  <div class="text" id="text">
+Reading is not a race.
+You can go slowly.
+You are doing well.
+  </div>
+</section>
+
+<script>
+/* ================= STATE ================= */
+let fontSize = 1.45;
+let spaced = false;
+let speech;
+
+/* ================= READING LIBRARY ================= */
+const library = [
+  {
+    type: "Poem",
+    title: "Hope",
+    credit: "Emily Dickinson (Public Domain)",
+    text: `Hope is the thing with feathers
+That perches in the soul,
+And sings the tune without the words,
+And never stops at all.`
+  },
+  {
+    type: "Poem",
+    title: "Stars",
+    credit: "Traditional (Public Domain)",
+    text: `Twinkle, twinkle, little star,
+How I wonder what you are.
+Up above the world so high,
+Like a diamond in the sky.`
+  },
+  {
+    type: "Paragraph",
+    title: "Reading Slowly",
+    credit: "Original Educational Text",
+    text: `Some people read fast.
+Some people read slowly.
+
+Reading slowly does not mean reading badly.
+It means your brain is taking time to understand.
+
+That is a strength.`
+  },
+  {
+    type: "Paragraph",
+    title: "Learning",
+    credit: "Original Educational Text",
+    text: `Learning looks different for everyone.
+Some learn by reading.
+Some learn by listening.
+Some learn by doing.
+
+All ways of learning are important.`
+  }
+];
+
+/* ================= BUILD LIBRARY ================= */
+const libContainer = document.getElementById("libraryButtons");
+library.forEach((item, index) => {
+  const btn = document.createElement("button");
+  btn.innerText = `${item.type}: ${item.title}`;
+  btn.onclick = () => loadText(index);
+  libContainer.appendChild(btn);
+});
+
+/* ================= FUNCTIONS ================= */
+function loadText(index) {
+  const card = document.getElementById("card");
+  card.style.opacity = 0;
+  setTimeout(() => {
+    document.getElementById("title").innerText = library[index].title;
+    document.getElementById("credit").innerText = library[index].credit;
+    document.getElementById("text").innerText = library[index].text;
+    card.style.opacity = 1;
+  }, 300);
+}
+
+function changeFont(value) {
+  fontSize = Math.min(Math.max(1.2, fontSize + value * 0.1), 2);
+  document.getElementById("card").style.fontSize = fontSize + "rem";
+}
+
+function toggleSpacing() {
+  spaced = !spaced;
+  document.getElementById("card").style.lineHeight = spaced ? "2.6" : "1.9";
+}
+
+function setTheme(theme) {
+  document.body.className = `theme-${theme}`;
+}
+
+function speak() {
+  if (speech) window.speechSynthesis.cancel();
+  speech = new SpeechSynthesisUtterance(
+    document.getElementById("card").innerText
+  );
+  speech.rate = 0.85;
+  window.speechSynthesis.speak(speech);
+}
+</script>
+
+</body>
+</html>
